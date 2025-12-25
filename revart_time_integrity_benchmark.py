@@ -238,20 +238,19 @@ class Benchmark:
                             f"{s.dt_game_ms:.3f}", f"{s.error_ms:.3f}", s.direction, s.mode, int(s.crc_ok)])
     
     def plot_wall_hist(self, bins: int = 100, save_path: Optional[str] = None):
-        # Collect strictly positive wall dt samples
-        wall = [s.dt_wall_ms for s in self.samples if s.dt_wall_ms > 0]
+        wall = [s.dt_wall_ms for s in self.samples if s.dt_wall_ms >= 0]
         if not wall:
             print("No wall dt samples to plot.")
             return
 
-        try:
-            import matplotlib.pyplot as plt
-        except ImportError:
-            print("matplotlib is required to plot the histogram.", file=sys.stderr)
-            return
+        import matplotlib.pyplot as plt
+
+        maxv = bins
+        # 1 ms bins from 0..maxv (so 0 is always a bin edge)
+        edges = list(range(0, int(math.ceil(maxv)) + 2))  # +2 to include last edge
 
         plt.figure()
-        plt.hist(wall, bins=bins)
+        plt.hist(wall, bins=edges)
         plt.xlabel("Wall interval dt [ms]")
         plt.ylabel("Count")
         plt.title("Histogram of wall-clock intervals")
@@ -262,21 +261,21 @@ class Benchmark:
             plt.close()
         else:
             plt.show()
-            
+
+
     def plot_game_hist(self, bins: int = 100, save_path: Optional[str] = None):
-        game = [s.dt_game_ms for s in self.samples if s.dt_game_ms > 0]
+        game = [s.dt_game_ms for s in self.samples if s.dt_game_ms >= 0]
         if not game:
             print("No game dt samples to plot.")
             return
 
-        try:
-            import matplotlib.pyplot as plt
-        except ImportError:
-            print("matplotlib is required to plot the histogram.", file=sys.stderr)
-            return
+        import matplotlib.pyplot as plt
+
+        maxv = bins
+        edges = list(range(0, int(math.ceil(maxv)) + 2))
 
         plt.figure()
-        plt.hist(game, bins=bins)
+        plt.hist(game, bins=edges)
         plt.xlabel("Game interval dt [ms]")
         plt.ylabel("Count")
         plt.title("Histogram of game-clock intervals")
@@ -287,6 +286,7 @@ class Benchmark:
             plt.close()
         else:
             plt.show()
+
 
 
 
