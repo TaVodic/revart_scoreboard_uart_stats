@@ -26,7 +26,7 @@ jobs:
 
       - name: Build exe
         run: |
-          pyinstaller --onefile revart_time_integrity_benchmark.py
+          pyinstaller --onefile --name uart_stats revart_time_integrity_benchmark.py 
 
       - name: Upload to Release
         uses: softprops/action-gh-release@v2
